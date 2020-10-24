@@ -9,11 +9,20 @@ public class EnemyImpact : MonoBehaviour
 
     public GameObject Skin;
     Renderer rend;
-
+    Material[] curMats;
+    Color curColor;
     bool isFreeze;
+    Transform PosSpawn;
+    Color freezeColor = new Color(0, 90f, 255f);
+
+    public static int numOfEnemy = 1;
+    public static int numOfEnemyKill = 0;
     private void Awake()
     {
         rend = Skin.GetComponent<Renderer>();
+        curMats = Skin.GetComponent<Renderer>().materials;
+        curColor = rend.material.color;
+        PosSpawn = GameObject.FindGameObjectWithTag("SpawnPos").transform;
     }
 
     void Start()
@@ -26,7 +35,7 @@ public class EnemyImpact : MonoBehaviour
     {
         if (isFreeze)
         {
-            rend.material.color = Color.Lerp(rend.material.color, new Color(0, 90f, 255f), Time.deltaTime);
+            rend.material.color = Color.Lerp(rend.material.color, freezeColor, Time.deltaTime);
         }
     }
 
@@ -38,18 +47,42 @@ public class EnemyImpact : MonoBehaviour
             GetComponent<Animator>().enabled = false; //STOP BEHAVIOR
             NormalZombie nm = GetComponent<NormalZombie>();
             StopCoroutine(nm.Couroutine_PathFiding);
-            //StartCoroutine(DisableBehaviorEnemy());
             nm.agent = null;
             GetComponent<NavMeshAgent>().enabled = false;  //stop path finding
-
-
+            StartCoroutine(CurrentDestroy_SpawnContinue());
         }
     }
-
-    IEnumerator DisableBehaviorEnemy()
+    IEnumerator CurrentDestroy_SpawnContinue()
     {
+
         yield return new WaitForSeconds(1f);
-        GetComponent<NormalZombie>().enabled = false;
-    
+        gameObject.SetActive(false);
+        MaterialPropertyBlock props = new MaterialPropertyBlock();
+        props.SetColor("_Color", curColor);
+        Skin.GetComponent<Renderer>().SetPropertyBlock(props);
+        numOfEnemyKill++;
+
+        if (numOfEnemyKill == numOfEnemy)
+        {
+            numOfEnemy++;
+            numOfEnemyKill = 0;
+            for (int i = 0; i < numOfEnemy; i++)
+                EnemyPool.Instance.SpawnPool("Enemy", posSpawn().position, posSpawn().rotation);
+        }
+
+        if (numOfEnemy == 50)
+            yield break;
+
     }
+
+    Transform posSpawn()
+    {
+        int lengthChild = PosSpawn.childCount;
+        int ran = Random.Range(0, lengthChild);
+
+        return PosSpawn.GetChild(ran).gameObject.transform;
+
+    }
+
+
 }

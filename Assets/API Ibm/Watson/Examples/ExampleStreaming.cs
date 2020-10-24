@@ -31,6 +31,7 @@ namespace IBM.Watsson.Examples
 {
     public class ExampleStreaming : MonoBehaviour
     {
+
         #region PLEASE SET THESE VARIABLES IN THE INSPECTOR
         [Space(10)]
         [Tooltip("The service URL (optional). This defaults to \"https://stream.watsonplatform.net/speech-to-text/api\"")]
@@ -209,9 +210,11 @@ namespace IBM.Watsson.Examples
                 {
                     foreach (var alt in res.alternatives)
                     {
-                        string text = string.Format("{0} ({1}, {2:0.00})\n", alt.transcript, res.final ? "Final" : "Interim", alt.confidence);
+                        // string text = string.Format("{0} ({1}, {2:0.00})\n", alt.transcript, res.final ? "Final" : "Interim", alt.confidence);
+                        string text = string.Format("{0}", alt.transcript);
+
                         Log.Debug("ExampleStreaming.OnRecognize()", text);
-                        ResultsField.text = text;
+                        ResultsField.text = text.Trim();
                     }
 
                     if (res.keywords_result != null && res.keywords_result.keyword != null)
@@ -231,6 +234,8 @@ namespace IBM.Watsson.Examples
                                 Log.Debug("ExampleStreaming.OnRecognize()", "\t word: {0} | confidence: {1}", alternative.word, alternative.confidence);
                         }
                     }
+
+
                 }
             }
         }

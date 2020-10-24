@@ -57,15 +57,12 @@ namespace IBM.Cloud.SDK.Debug
 
                 if (log._level == LogLevel.ERROR || log._level == LogLevel.CRITICAL)
                 {
-                    UnityEngine.Debug.LogError(logString);
                 }
                 else if (log._level == LogLevel.WARNING)
                 {
-                    UnityEngine.Debug.LogWarning(logString);
                 }
                 else
                 {
-                    UnityEngine.Debug.Log(logString);
                 }
             }
         }
