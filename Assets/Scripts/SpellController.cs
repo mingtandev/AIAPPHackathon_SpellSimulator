@@ -27,8 +27,11 @@ public class SpellController : MonoBehaviour
 
 
     public Spells[] spells;
+    public GameObject explosion;
 
     bool canSpell = true;
+    public bool darkObsSpawn;
+    public Vector3 posGenSpell;
     string completeSpell;
 
     private void Awake()
@@ -75,6 +78,10 @@ public class SpellController : MonoBehaviour
         {
             SpellTeleport();
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SpellDarkObs();
+        }
 
     }
 
@@ -91,7 +98,7 @@ public class SpellController : MonoBehaviour
                     Debug.Log("HAVE : " + SpellCommandManager.instance.commands[i].nameSpell);
                     canSpell = false;
                     completeSpell = SpellCommandManager.currentCommand;
-                    switch(SpellCommandManager.instance.commands[i].nameSpell)
+                    switch (SpellCommandManager.instance.commands[i].nameSpell)
                     {
                         case "Flame":
                             SpellFlame();
@@ -101,6 +108,9 @@ public class SpellController : MonoBehaviour
                             break;
                         case "Teleport":
                             SpellTeleport();
+                            break;
+                        case "Impossible":
+                            SpellDarkObs();
                             break;
                     }
                     return;
@@ -112,7 +122,7 @@ public class SpellController : MonoBehaviour
     IEnumerator CheckRecognizeContinue()
     {
         yield return new WaitForSeconds(1f);
-        if(!completeSpell.Equals(SpellCommandManager.currentCommand))
+        if (!completeSpell.Equals(SpellCommandManager.currentCommand))
         {
             canSpell = true;
         }
@@ -131,6 +141,7 @@ public class SpellController : MonoBehaviour
         transform.position = pos;
     }
 
+   
     void SpellFlame()
     {
         anim.SetBool("isSpell", true);
@@ -138,6 +149,7 @@ public class SpellController : MonoBehaviour
         GameObject mySpell = Instantiate(spells[0].spellFX, transform.position + hand.transform.forward * 5f, transform.rotation);
         GameObject FXhand = Instantiate(spells[0].EffectHand, EffectHand.transform.position, Quaternion.identity, EffectHand);
         StartCoroutine(resetAnimation());
+        Destroy(mySpell,2f);
     }
 
     void SpellFreeze()
@@ -162,8 +174,22 @@ public class SpellController : MonoBehaviour
     }
 
 
+    void SpellDarkObs()
+    {
+        anim.SetBool("isSpell", true);
+        posGenSpell = transform.position + hand.transform.forward * 10f;
+        GameObject mySpell = Instantiate(spells[3].spellFX, EffectHand.transform.position, Camera.main.transform.rotation);
+        mySpell.GetComponent<SpellForward>().constraintPos = posGenSpell;
+        mySpell.GetComponent<SpellForward>().isObs = true;
+        darkObsSpawn = true;
 
-    
+        GameObject FXhand = Instantiate(spells[3].EffectHand, EffectHand.transform.position, Quaternion.identity, EffectHand);
+        StartCoroutine(resetAnimation());
+
+    }
+
+
+
 
 
 

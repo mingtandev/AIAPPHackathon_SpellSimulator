@@ -29,8 +29,7 @@ public class Enemy : MonoBehaviour
         {
             if (obj[0].tag == "Player")
             {
-                // player.Heal -= damage;
-                // SoundManager.instance.Play("BeingAttack");
+                player.heal -= damage;
             }
         }
     }

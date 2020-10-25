@@ -32,14 +32,12 @@ public class NormalZombie : Enemy
     //private Status WalkerStatus = Status.Idle;
     public float DistanceToChase = 10f;
 
-    AudioSource audioSource;
     protected void Awake()
     {
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         currentState = idle;
         damage = 10;
-        audioSource = GetComponent<AudioSource>();
     }
 
     void Start()
@@ -102,25 +100,19 @@ public class NormalZombie : Enemy
     {
         anim.Play("Die");
         isDeath = true;
-        AudioClip clipDie;
-        if (isFemale)
-        {
-            clipDie = Resources.Load("Audio/Female_Dead") as AudioClip;
-        }
-        else
-        {
-            clipDie = Resources.Load("Audio/Male_Dead") as AudioClip;
-        }
-        audioSource.PlayOneShot(clipDie, 1f);
-
         StopCoroutine(Couroutine_PathFiding);
         GetComponent<NavMeshAgent>().enabled = false;  //stop path finding
         yield return new WaitForSeconds(1.8f);
-        audioSource.Stop();
         this.enabled = false;
         GetComponent<CapsuleCollider>().enabled = false;
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-        Destroy(gameObject, 2f);
+        StartCoroutine(unactiveZombie());
+    }
+
+    IEnumerator unactiveZombie()
+    {
+        yield return new WaitForSeconds(2f);
+        gameObject.SetActive(false);
     }
 
     void StopAction()

@@ -12,22 +12,25 @@ public class EnemyImpact : MonoBehaviour
     Material[] curMats;
     Color curColor;
     bool isFreeze;
-    Transform PosSpawn;
     Color freezeColor = new Color(0, 90f, 255f);
+    Rigidbody body;
 
     public static int numOfEnemy = 1;
     public static int numOfEnemyKill = 0;
+    SpellController controller;
+
     private void Awake()
     {
         rend = Skin.GetComponent<Renderer>();
         curMats = Skin.GetComponent<Renderer>().materials;
         curColor = rend.material.color;
-        PosSpawn = GameObject.FindGameObjectWithTag("SpawnPos").transform;
+        controller = GameObject.FindGameObjectWithTag("Player").GetComponent<SpellController>();
+        body = GetComponent<Rigidbody>();
     }
 
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -36,6 +39,11 @@ public class EnemyImpact : MonoBehaviour
         if (isFreeze)
         {
             rend.material.color = Color.Lerp(rend.material.color, freezeColor, Time.deltaTime);
+        }
+
+        if (controller.darkObsSpawn)
+        {
+            DarkObsEffect();
         }
     }
 
@@ -52,6 +60,15 @@ public class EnemyImpact : MonoBehaviour
             StartCoroutine(CurrentDestroy_SpawnContinue());
         }
     }
+
+    void DarkObsEffect()
+    {
+
+        Vector3 posHole = controller.posGenSpell;
+        Vector3 dir = posHole - transform.position;
+        body.AddForce(dir * 100f);
+    }
+
     IEnumerator CurrentDestroy_SpawnContinue()
     {
 
@@ -60,29 +77,13 @@ public class EnemyImpact : MonoBehaviour
         MaterialPropertyBlock props = new MaterialPropertyBlock();
         props.SetColor("_Color", curColor);
         Skin.GetComponent<Renderer>().SetPropertyBlock(props);
-        numOfEnemyKill++;
-
-        if (numOfEnemyKill == numOfEnemy)
-        {
-            numOfEnemy++;
-            numOfEnemyKill = 0;
-            for (int i = 0; i < numOfEnemy; i++)
-                EnemyPool.Instance.SpawnPool("Enemy", posSpawn().position, posSpawn().rotation);
-        }
-
-        if (numOfEnemy == 50)
-            yield break;
 
     }
 
-    Transform posSpawn()
-    {
-        int lengthChild = PosSpawn.childCount;
-        int ran = Random.Range(0, lengthChild);
 
-        return PosSpawn.GetChild(ran).gameObject.transform;
 
-    }
+
+
 
 
 }

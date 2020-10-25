@@ -20,6 +20,8 @@ public class EnemyPool : MonoBehaviour
     //SINGLETON
     public static EnemyPool Instance;
 
+    public Transform PosSpawn;
+
     private void Awake()
     {
         Instance = this;
@@ -41,6 +43,8 @@ public class EnemyPool : MonoBehaviour
 
             poolDictionary.Add(pool.tag, objectPool);
         }
+
+        StartCoroutine(ReSpawn());
     }
 
     public GameObject SpawnPool(string tag, Vector3 position, Quaternion rotation)
@@ -62,6 +66,23 @@ public class EnemyPool : MonoBehaviour
 
         return objectToSpawn;
     }
+
+    IEnumerator ReSpawn()
+    {
+        yield return new WaitForSeconds(1f);
+        EnemyPool.Instance.SpawnPool("Enemy", posSpawn().position, posSpawn().rotation);
+        StartCoroutine(ReSpawn());
+    }
+    Transform posSpawn()
+    {
+        int lengthChild = PosSpawn.childCount;
+        int ran = Random.Range(0, lengthChild);
+
+        return PosSpawn.GetChild(ran).gameObject.transform;
+
+    }
+
+
 }
 
 
